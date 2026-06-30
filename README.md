@@ -50,8 +50,3 @@ requests:
 ```
 
 Put your yaml config file in the location specified by the environment variable `PINGGU_CONFIG_FILE`
-
-# Output
-Output will be shown below:
-```
-```
