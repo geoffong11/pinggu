@@ -11,8 +11,8 @@ func ParseYaml(yamlPath string) (Config, error) {
 	if err != nil {
 		return Config{}, err
 	}
-	pingguConfig := Config{}
-	if err := yaml.Unmarshal(data, pingguConfig); err != nil {
+	var pingguConfig Config
+	if err := yaml.Unmarshal(data, &pingguConfig); err != nil {
 		return Config{}, err
 	}
 	return pingguConfig, nil

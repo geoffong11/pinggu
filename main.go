@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"main/sender"
 	yamlparser "main/yaml-parser"
 	"os"
@@ -9,7 +10,11 @@ import (
 )
 
 func main() {
-	configFilePath := os.Getenv("PINGGU_CONFIG_FILE")
+	var configFilePath string
+	configFilePath, exists := os.LookupEnv("PINGGU_CONFIG_FILE")
+	if !exists {
+		configFilePath = "./config.yaml"
+	}
 	config, err := yamlparser.ParseYaml(configFilePath)
 	if err != nil {
 		panic(err)
@@ -17,26 +22,27 @@ func main() {
 	numUsers := config.Users
 	duration := config.Duration
 	users := make([]sender.User, numUsers)
-	for range numUsers {
+	for i := range numUsers {
 		var user sender.NormalUser
 		getRequests := make([]sender.Get, len(config.HttpRequests.Get))
-		for _, getRequest := range config.HttpRequests.Get {
-			getRequests = append(getRequests, sender.Get{
+		for i, getRequest := range config.HttpRequests.Get {
+			getRequests[i] = sender.Get{
 				Endpoint: getRequest.Endpoint,
-			})
+			}
 		}
 		postRequests := make([]sender.Post, len(config.HttpRequests.Post))
-		for _, postRequest := range config.HttpRequests.Post {
-			postRequests = append(postRequests, sender.Post{
+		for i, postRequest := range config.HttpRequests.Post {
+			postRequests[i] = sender.Post{
 				Endpoint: postRequest.Endpoint,
 				Body:     []byte(postRequest.Body),
-			})
+			}
 		}
 		user.GetEndpoints = getRequests
 		user.PostEndpoints = postRequests
-		users = append(users, user)
+		users[i] = user
 	}
 	timer := time.NewTimer(time.Duration(duration) * time.Second)
+
 	defer timer.Stop()
 	var wg sync.WaitGroup
 	for {
@@ -47,7 +53,11 @@ func main() {
 			for _, user := range users {
 				wg.Go(
 					func() {
-						user.Action()
+						res, err := user.Action()
+						if err != nil {
+							panic(err)
+						}
+						fmt.Println(string(res))
 					},
 				)
 			}
