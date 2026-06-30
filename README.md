@@ -29,19 +29,23 @@ WARNINGS:
 # Input
 A sample yaml file is given below:
 ```
-users:
-  normal: 30
-  readonly: 20
-duration: 60 # in seconds
+users: 3
+duration: 5 # in seconds
 requests:
   GET:
     - endpoint: http://localhost:3000/jobs
     - endpoint: http://localhost:3000/job/1
   POST:
     - endpoint: http://localhost:3000/locations/add_locations
-      body: {"location": "Australia"}
+      body: |
+        {
+          "location": "Australia"
+        }
     - endpoint: http://localhost:3000/jobs/1/edit_job
-      body: {"pay": 10000}
+      body: |
+        {
+          "pay": 10000
+        }
 
 ```
 
