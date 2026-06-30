@@ -1,18 +1,51 @@
-# Goal
-A program that aims to test for race conditions for a server / app.
+# About
+A program that aims to simulate multiple users (good and bad actors).
+
+Many times, scale is something that is not really we can do at home.
+Hence this program helps to do so. It is a Golang program that
+simulates multiple users.
+
+Focuses on HTTP APIs (GET, POST, DELETE)
+
+WARNINGS: 
+- Since this is a very simple program designed to test the concurrency and the timing of the
+  website, the timing output from this program will be influenced by network connectivity. A better measure
+  will be to check the duration from the app itself.
+- You may have to turn off rate limiting to see the full effects of concurrency
+
+# Goals
+1) Create multiple users through multiple concurrent goroutines
+2) Track the timing between requests and responses, to see if there is any degradation (can use otel)
+3) Create bad actor users if specified. But what is bad actor users?
+    - A bad actor user is one that sends malformed requests
+    - Simulate in the real world when network breaks down
 
 
-1) Parse yaml file
-2) Give option to retry but default 50.
-3) Check output to make sure it works (Can also give a api endpoint for this app to check, with expected output)
+# What it do
+1) Read the yaml config file
+2) Send requests based on the config file
+3) After the duration (in seconds) is up, return the results
 
 # Input
 A sample yaml file is given below:
 ```
+users:
+  normal: 30
+  readonly: 20
+duration: 60 # in seconds
+requests:
+  GET:
+    - endpoint: http://localhost:3000/jobs
+    - endpoint: http://localhost:3000/job/1
+  POST:
+    - endpoint: http://localhost:3000/locations/add_locations
+      body: {"location": "Australia"}
+    - endpoint: http://localhost:3000/jobs/1/edit_job
+      body: {"pay": 10000}
 
 ```
-Explanation of fields:
 
+Put your yaml config file in the location specified by the environment variable `PINGGU_CONFIG_FILE`
 
 # Output
 Output will be shown below:
