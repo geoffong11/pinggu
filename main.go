@@ -41,27 +41,32 @@ func main() {
 		user.PostEndpoints = postRequests
 		users[i] = user
 	}
-	timer := time.NewTimer(time.Duration(duration) * time.Second)
-
-	defer timer.Stop()
 	var wg sync.WaitGroup
-	for {
-		select {
-		case <-timer.C:
-			return
-		default:
-			for _, user := range users {
-				wg.Go(
-					func() {
+	for _, user := range users {
+		wg.Go(
+			func() {
+				timer := time.NewTimer(time.Duration(duration) * time.Second)
+				userActivity := []string{}
+				timing := []int{}
+				defer timer.Stop()
+				for {
+					select {
+					case <-timer.C:
+						fmt.Println(timing)
+						return
+					default:
+						start := time.Now()
 						res, err := user.Action()
+						elapsed := time.Since(start)
 						if err != nil {
 							panic(err)
 						}
-						fmt.Println(string(res))
-					},
-				)
-			}
-			wg.Wait()
-		}
+						timing = append(timing, int(elapsed.Milliseconds()))
+						userActivity = append(userActivity, string(res))
+					}
+				}
+			},
+		)
 	}
+	wg.Wait()
 }

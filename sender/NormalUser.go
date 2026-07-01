@@ -13,7 +13,14 @@ type NormalUser struct {
 }
 
 func (normalUser NormalUser) Action() ([]byte, error) {
-	randType := rand.IntN(2)
+	var randType int
+	if len(normalUser.PostEndpoints) == 0 {
+		randType = 0
+	} else if len(normalUser.GetEndpoints) == 0 {
+		randType = 1
+	} else {
+		randType = rand.IntN(2)
+	}
 	var resp *http.Response
 	var err error
 	if randType == 0 {

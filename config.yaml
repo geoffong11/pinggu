@@ -1,17 +1,6 @@
-users: 3
-duration: 5 # in seconds
+users: 1000
+duration: 4 # in seconds
 requests:
   GET:
-    - endpoint: http://localhost:3000/jobs
-    - endpoint: http://localhost:3000/job/1
-  POST:
-    - endpoint: http://localhost:3000/locations/add_locations
-      body: |
-        {
-          "location": "Australia"
-        }
-    - endpoint: http://localhost:3000/jobs/1/edit_job
-      body: |
-        {
-          "pay": 10000
-        }
+    # - endpoint: http://localhost:1337/tutor
+    - endpoint: http://localhost:5173
